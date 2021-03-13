@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="BouncyCastle" Version="1.8.9" />
+      <PackageReference Include="DerConverter" Version="3.0.0.82" />
+      <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
+      <PackageReference Include="Microsoft.AspNetCore.Http.Extensions" Version="2.2.0" />
+      <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+      <PackageReference Include="PemUtils" Version="3.0.0.82" />
+      <PackageReference Include="System.Private.ServiceModel" Version="4.4.4" />
+      <PackageReference Include="System.Security.Cryptography.OpenSsl" Version="4.4.0" />
+      <PackageReference Include="System.ServiceModel.Duplex" Version="4.4.4" />
+      <PackageReference Include="System.ServiceModel.Http" Version="4.4.4" />
+    </ItemGroup>
+    
+</Project>
