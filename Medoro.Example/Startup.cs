@@ -28,8 +28,10 @@ namespace Medoro.Example
                 true,
                 TimeSpan.FromSeconds(20)
             ));
+            
             services.AddMemoryCache();
             services.AddControllers();
+            services.AddRazorPages();
             services.AddMvc();
         }
 
@@ -45,6 +47,7 @@ namespace Medoro.Example
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapRazorPages();
                 endpoints.MapControllerRoute("default", "{controller}/{action}/{id?}");
             });
         }

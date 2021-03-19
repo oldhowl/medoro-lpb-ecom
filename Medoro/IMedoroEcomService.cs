@@ -25,7 +25,27 @@ namespace Medoro
             int? frequency = null,
             DateTime? endDate = null
         );
+        Task<PaymentPayload> PaymentMode5(
+            bool isAutoDeposit,
+            string descriptor,
+            object orderId,
+            decimal amount,
+            string currency,
+            string orderDescription,
+            Card card,
+            string payerName,
+            string payerAddress,
+            string payerCity,
+            string payerCountry,
+            string payerZip,
+            string payerPhone,
+            string payerEmail,
+            string notification,
+            int? frequency = null,
+            DateTime? endDate = null
+        );
 
-        Task<PaymentResponse> AuthorizePayment(string paymentId, string paRes);
+        Task<PaymentResponse> AuthorizeSoapPayment(string paymentId, string paRes);
+        PaymentResponse AuthorizeFormPayment(string data, string key);
     }
 }

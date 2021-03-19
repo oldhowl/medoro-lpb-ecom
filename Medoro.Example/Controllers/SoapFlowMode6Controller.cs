@@ -3,16 +3,16 @@ using System.Collections.Specialized;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using Medoro.Extensions;
+using Medoro.Example.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Medoro.Example
+namespace Medoro.Example.Controllers
 {
-    [ApiController]
-    public class PaymentController : ControllerBase
+    [Route("soap")]
+    public class SoapFlowMode6Controller : ControllerBase
     {
-        [HttpGet("/")]
+        [HttpGet]
         public async Task Payment(
             [FromServices] IMedoroEcomService ecomService,
             [FromServices] IMemoryCache memoryCache)
@@ -21,7 +21,7 @@ namespace Medoro.Example
 
 
             var paymentResponse = await ecomService.PaymentMode6(
-                false,
+                true,
                 "test",
                 orderId,
                 100,
@@ -38,7 +38,11 @@ namespace Medoro.Example
                 "Notification test"
             );
 
-            var hash = GetHash(orderId);
+            var hash = Convert.ToBase64String(
+                MD5.Create()
+                    .ComputeHash(
+                        Encoding.UTF8.GetBytes(orderId + "secret")));
+            
             memoryCache.Set(hash, paymentResponse.Payment.ID);
 
             var threeDsDataCollection = new NameValueCollection();
@@ -61,16 +65,8 @@ namespace Medoro.Example
             return Ok(new
             {
                 Result = "Success payment!",
-                Data = await ecomService.AuthorizePayment(paymentId, paRes)
+                Data = await ecomService.AuthorizeSoapPayment(paymentId, paRes)
             });
-        }
-
-        private string GetHash(string input)
-        {
-            var md5 = MD5.Create();
-            var hash = md5.ComputeHash(Encoding.UTF8.GetBytes(input + "secret"));
-
-            return Convert.ToBase64String(hash);
         }
     }
 }

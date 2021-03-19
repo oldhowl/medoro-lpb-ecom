@@ -3,7 +3,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace Medoro.Extensions
+namespace Medoro.Example.Extensions
 {
     /// <summary>
     /// https://gist.github.com/priore/7163408

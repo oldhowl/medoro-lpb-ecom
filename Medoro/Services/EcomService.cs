@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Medoro.Exceptions;
 using Medoro.Models;
 using Medoro.Services.CryptoServices;
+using Medoro.Services.MedoroClients;
+using Org.BouncyCastle.Crypto.Operators;
 using ServiceReference1;
 using PaymentResponse = Medoro.Models.PaymentResponse;
 
@@ -24,6 +26,7 @@ namespace Medoro.Services
 
         private readonly Signature _signature;
         private readonly EcomClient _ecomClient;
+        private MedoroHttpClient _medoroHttpClient;
         private readonly Crypto _crypto;
 
         public EcomService(
@@ -37,6 +40,8 @@ namespace Medoro.Services
 
         {
             _isTestEnv = isTestEnv;
+            _medoroHttpClient = new MedoroHttpClient(_isTestEnv);
+
             _crypto = new Crypto();
             _ecomClient = new EcomClient(Endpoint, timeoutConnection);
 
@@ -45,6 +50,45 @@ namespace Medoro.Services
             _merchantId = merchantId;
             _merchantPrivateKeyPath = merchantPrivateKeyPath;
             _gatewayKeyPath = gatewayKeyPath;
+        }
+
+
+        public async Task<PaymentPayload> PaymentMode5(bool isAutoDeposit,
+            string descriptor,
+            object orderId,
+            decimal amount,
+            string currency,
+            string orderDescription,
+            Card card,
+            string payerName,
+            string payerAddress,
+            string payerCity,
+            string payerCountry,
+            string payerZip,
+            string payerPhone,
+            string payerEmail,
+            string notification,
+            int? frequency = null,
+            DateTime? endDate = null)
+        {
+            var paymentData = EcomFactory.CreatePaymentData(
+                isAutoDeposit, 5, descriptor, orderId, amount, currency, orderDescription, card, payerName,
+                payerAddress, payerCity, payerCountry, payerZip, payerPhone, payerEmail, notification, frequency,
+                endDate);
+
+            var xmlData = XmlPreparer.Serialize(paymentData);
+
+            var (encryptedRc4OneTimeKeyByGatewayPem,
+                encryptedPaymentDataByRc4OneTimeKey,
+                signature) = await CryptData(xmlData);
+
+            return new PaymentPayload(
+                encryptedRc4OneTimeKeyByGatewayPem,
+                _keyIndex.ToString(),
+                encryptedPaymentDataByRc4OneTimeKey,
+                _merchantId.ToString(),
+                signature
+            );
         }
 
         public async Task<PaymentResponse> PaymentMode6(
@@ -72,7 +116,7 @@ namespace Medoro.Services
                 payerAddress, payerCity, payerCountry, payerZip, payerPhone, payerEmail, notification, frequency,
                 endDate);
 
-            var xmlData =  XmlPreparer.Serialize(paymentData);
+            var xmlData = XmlPreparer.Serialize(paymentData);
 
             var (encryptedRc4OneTimeKeyByGatewayPem,
                 encryptedPaymentDataByRc4OneTimeKey,
@@ -81,7 +125,7 @@ namespace Medoro.Services
             var result = await _ecomClient.PaymentAsync(new ecomPaymentType()
             {
                 KEY = encryptedRc4OneTimeKeyByGatewayPem,
-                DATA =  encryptedPaymentDataByRc4OneTimeKey,
+                DATA = encryptedPaymentDataByRc4OneTimeKey,
                 KEY_INDEX = _keyIndex.ToString(),
                 INTERFACE = _merchantId.ToString(),
                 SIGNATURE = signature,
@@ -91,17 +135,23 @@ namespace Medoro.Services
             if (!verify)
                 throw new MedoroException("Signature validation failed");
 
-            var responseData =  DecryptData(result.PaymentResponse1.DATA, result.PaymentResponse1.KEY);
+            var responseData = DecryptData(result.PaymentResponse1.DATA, result.PaymentResponse1.KEY);
 
             return XmlPreparer.Deserialize<PaymentResponse>(responseData);
         }
 
 
-        public async Task<PaymentResponse> AuthorizePayment(string paymentId, string paRes)
+        public PaymentResponse AuthorizeFormPayment(string data, string key)
+        {
+            var responseData = DecryptData(data, key);
+            return XmlPreparer.Deserialize<PaymentResponse>(responseData);
+        }
+
+        public async Task<PaymentResponse> AuthorizeSoapPayment(string paymentId, string paRes)
         {
             var authorizeRequest = new AuthenticateData(paymentId, paRes);
-            
-            var xmlData =  XmlPreparer.Serialize(authorizeRequest);
+
+            var xmlData = XmlPreparer.Serialize(authorizeRequest);
 
             var (encryptedRc4OneTimeKeyByGatewayPem,
                 encryptedPaymentDataByRc4OneTimeKey,
@@ -110,7 +160,7 @@ namespace Medoro.Services
             var result = await _ecomClient.AuthenticateAsync(new ecomPaymentType()
             {
                 KEY = encryptedRc4OneTimeKeyByGatewayPem,
-                DATA =  encryptedPaymentDataByRc4OneTimeKey,
+                DATA = encryptedPaymentDataByRc4OneTimeKey,
                 KEY_INDEX = _keyIndex.ToString(),
                 INTERFACE = _merchantId.ToString(),
                 SIGNATURE = signature,
@@ -125,8 +175,6 @@ namespace Medoro.Services
             return XmlPreparer.Deserialize<PaymentResponse>(responseData);
         }
 
-        
-       
 
         private string DecryptData(string encryptedData, string encryptedRc4GatewayKey)
         {
