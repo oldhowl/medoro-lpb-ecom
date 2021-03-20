@@ -13,7 +13,6 @@ namespace Medoro
             decimal amount,
             string currency,
             string orderDescription,
-            Card card,
             string payerName,
             string payerAddress,
             string payerCity,
@@ -22,6 +21,7 @@ namespace Medoro
             string payerPhone,
             string payerEmail,
             string notification,
+            Card card = null,
             int? frequency = null,
             DateTime? endDate = null
         );
@@ -32,7 +32,6 @@ namespace Medoro
             decimal amount,
             string currency,
             string orderDescription,
-            Card card,
             string payerName,
             string payerAddress,
             string payerCity,
@@ -41,6 +40,7 @@ namespace Medoro
             string payerPhone,
             string payerEmail,
             string notification,
+            Card card = null,
             int? frequency = null,
             DateTime? endDate = null
         );

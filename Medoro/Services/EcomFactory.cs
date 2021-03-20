@@ -14,7 +14,6 @@ namespace Medoro.Services
             decimal amount,
             string currency,
             string orderDescription,
-            Card card,
             string payerName,
             string payerAddress,
             string payerCity,
@@ -23,6 +22,7 @@ namespace Medoro.Services
             string payerPhone,
             string payerEmail,
             string notification,
+            Card card = null,
             int? frequency = null,
             DateTime? endDate = null)
         {
@@ -31,7 +31,6 @@ namespace Medoro.Services
             if (orderId == null) throw new MedoroModelValidationException(nameof(orderId));
             if (currency == null) throw new MedoroModelValidationException(nameof(currency));
             if (orderDescription == null) throw new MedoroModelValidationException(nameof(orderDescription));
-            if (card == null) throw new MedoroModelValidationException(nameof(card));
             if (payerName == null) throw new MedoroModelValidationException(nameof(payerName));
             if (payerAddress == null) throw new MedoroModelValidationException(nameof(payerAddress));
             if (payerCity == null) throw new MedoroModelValidationException(nameof(payerCity));
@@ -49,7 +48,6 @@ namespace Medoro.Services
                 new Payment(mode, descriptor),
                 recurring,
                 new Order(orderId, amount, currency, orderDescription),
-                card,
                 new BillingAddress(payerName, payerAddress, payerCity, payerCountry, payerZip, payerPhone, payerEmail),
                 notification
             );

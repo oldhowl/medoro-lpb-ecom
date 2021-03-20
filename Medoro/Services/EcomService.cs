@@ -59,7 +59,6 @@ namespace Medoro.Services
             decimal amount,
             string currency,
             string orderDescription,
-            Card card,
             string payerName,
             string payerAddress,
             string payerCity,
@@ -68,12 +67,13 @@ namespace Medoro.Services
             string payerPhone,
             string payerEmail,
             string notification,
+            Card card = null,
             int? frequency = null,
             DateTime? endDate = null)
         {
             var paymentData = EcomFactory.CreatePaymentData(
-                isAutoDeposit, 5, descriptor, orderId, amount, currency, orderDescription, card, payerName,
-                payerAddress, payerCity, payerCountry, payerZip, payerPhone, payerEmail, notification, frequency,
+                isAutoDeposit, 5, descriptor, orderId, amount, currency, orderDescription, payerName,
+                payerAddress, payerCity, payerCountry, payerZip, payerPhone, payerEmail, notification, card, frequency,
                 endDate);
 
             var xmlData = XmlPreparer.Serialize(paymentData);
@@ -98,7 +98,6 @@ namespace Medoro.Services
             decimal amount,
             string currency,
             string orderDescription,
-            Card card,
             string payerName,
             string payerAddress,
             string payerCity,
@@ -107,13 +106,14 @@ namespace Medoro.Services
             string payerPhone,
             string payerEmail,
             string notification,
+            Card card = null,
             int? frequency = null,
             DateTime? endDate = null
         )
         {
             var paymentData = EcomFactory.CreatePaymentData(
-                isAutoDeposit, 6, descriptor, orderId, amount, currency, orderDescription, card, payerName,
-                payerAddress, payerCity, payerCountry, payerZip, payerPhone, payerEmail, notification, frequency,
+                isAutoDeposit, 6, descriptor, orderId, amount, currency, orderDescription,  payerName,
+                payerAddress, payerCity, payerCountry, payerZip, payerPhone, payerEmail, notification,card, frequency,
                 endDate);
 
             var xmlData = XmlPreparer.Serialize(paymentData);

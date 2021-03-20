@@ -107,13 +107,13 @@ namespace Medoro.Models
         [XmlElement(ElementName = "Notification")]
         public string Notification { get; set; }
 
-        public PaymentData(bool autoDeposit, Payment payment, Recurring recurring, Order order, Card card, BillingAddress billingAddress, string notification)
+        public PaymentData(bool autoDeposit, Payment payment, Recurring recurring, Order order,  BillingAddress billingAddress, string notification, Card card = null)
         {
             AutoDeposit = autoDeposit;
+            Card = card;
             Payment = payment;
             Recurring = recurring;
             Order = order;
-            Card = card;
             BillingAddress = billingAddress;
             Notification = notification;
         }

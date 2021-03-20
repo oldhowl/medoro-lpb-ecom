@@ -24,7 +24,6 @@ namespace Medoro.Example.Controllers
                 100,
                 "EUR",
                 "Test order",
-                CardFactory.ChallengeFlow(),
                 "Ivan Ivanov",
                 "Lenina 1",
                 "Tomsk",

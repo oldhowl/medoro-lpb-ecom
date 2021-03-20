@@ -27,7 +27,6 @@ namespace Medoro.Example.Controllers
                 100,
                 "EUR",
                 "Test order",
-                CardFactory.ChallengeFlow(),
                 "Ivan Ivanov",
                 "Lenina 1",
                 "Tomsk",
@@ -35,7 +34,8 @@ namespace Medoro.Example.Controllers
                 "123456",
                 "+79123456789",
                 "random-email@test.ru",
-                "Notification test"
+                "Notification test",
+                CardFactory.ChallengeFlow()
             );
 
             var hash = Convert.ToBase64String(
